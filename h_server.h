@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -15,7 +14,6 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <sqlite3.h>
-#include "Security/RSA.h"
 
 #define MAXLEN 50
 #define TRUE 1
@@ -25,8 +23,10 @@ typedef struct sockaddr_in socketAddress;	// This type of variable will be calle
 typedef int SOCKET;				            // This type of variable will be called sName
 
 //Special Types
-#ifndef _RSA_h
+#ifndef _RSA_H
 
+#include "Security/RSA.c"
+#include <string.h>
 #include <stdio.h>
 typedef char* string;				        // Easier to understand variables named strName
 typedef int boolean;                        // This type of variable will be called bName

@@ -5,7 +5,7 @@ RES = server.o CreateSocket.o send.o ReceiveString.o ReceiveInt.o SendInt.o Hand
 all:out
 
 RSA.o: Security/RSA.h Security/RSA.c
-					$(CC) $(FLAGS) Security/RSA.c
+					$(CC) $(FLAGS) Security/RSA.c -lssl -lcrypto
 
 Register.o: h_server.h Register.c
 					$(CC) $(FLAGS) Register.c
@@ -34,7 +34,7 @@ IPCheck.o: h_server.h IPCheck.c
 					$(CC) $(FLAGS) IPCheck.c
 
 out: $(RES)
-					$(CC) -o server $(RES) -lpthread -lsqlite3
+					$(CC) -o server $(RES) -lpthread -lsqlite3 -lssl -lcrypto
 
 clean:
 	rm $(RES) server

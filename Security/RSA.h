@@ -5,6 +5,7 @@
 //Include openssl used libraries for the server side
 
 #include <stdio.h>
+#include <string.h>
 #include <openssl/pem.h>
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
@@ -27,7 +28,7 @@ typedef unsigned char DIGEST[1024];   //  Signatures must come in SHA1, so we ha
 
 string digitalSignatureOfMsg(string);       //  Function to sign the message with SHA1
 
-boolean checkSignature(EVP_PKEY*, string);   //  Function to check if message was from the right person (BIO)
+boolean checkSignature(EVP_PKEY*, string, string);   //  Function to check if message was from the right person (BIO)
 
 string cipherMessage(EVP_PKEY*, string);    //  Wheneber I want to send a message to the user, must encrypt with his public key (BIO)
 

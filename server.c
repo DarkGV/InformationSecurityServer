@@ -32,9 +32,9 @@ Users* usLoggedIn;		// To know logged in users information.
 
 // -------------------------- CTRL+C Handler --------------------
 
-static void sigHandler(int signal){
-	//serverUp = FALSE;
-}
+/*static void sigHandler(int signal){
+	serverUp = FALSE;
+}*/
 
 // -------------------------------------------------------------
 
@@ -49,7 +49,7 @@ int main(){
 	sqlite3 *database;
 	//---------------------------------- END --------------------------------------------------------
 
-	printf("PID = %d\nPARENT = %d\n", getpid(), getppid());
+	//printf("PID = %d\nPARENT = %d\n", getpid(), getppid());
 	//printf("%d", daemon(1, 1));
 
 	//signal(SIGINT, sigHandler);
