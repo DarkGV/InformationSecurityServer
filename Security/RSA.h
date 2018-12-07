@@ -11,6 +11,7 @@
 
 typedef char* string;
 typedef int boolean;
+typedef unsigned char DIGEST[1024];   //  Signatures must come in SHA1, so we have 160 bits = 20 bytes
 /* 
 *   This key must have been generated before with openssl command.
 *   openssl genrsa 1024(bit) (the key will be 1024 bits long)
