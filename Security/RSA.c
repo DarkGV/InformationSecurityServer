@@ -1,55 +1,51 @@
+#ifndef _RSA_H
 #include "RSA.h"
+#endif
 
-string digitalSignatureOfMsg(string strMsg){
+string digitalSignatureOfMsg(unsigned char* dgst, int* size, string strMsg){
 
-    EVP_MD_CTX  md_ctx;
-    DIGEST dgst;
-    string sha1Signed;
-    unsigned int iBytesWritten = 0;
+    EVP_PKEY *pkey;
+    FILE* privateKeyFile = fopen("Security/sk", "r");
+    RSA* privateKeyRSA;
+    int ret;
 
-    //  How to sign a message:
-    //  First we need to read the sk from the file:
+    dgst = (unsigned char*) calloc(256, sizeof(char));
 
-    FILE* sk = fopen("pk", "r"); // Open the file read-only (chmod = 400)
+    pkey = PEM_read_PrivateKey(privateKeyFile, NULL, NULL, NULL);
+    fclose(privateKeyFile);
 
-    EVP_PKEY* pkeySK = PEM_read_PrivateKey(sk, NULL, NULL, NULL); //    Only want to get the private key fro the file;
-    fclose(sk);
+    privateKeyRSA = EVP_PKEY_get1_RSA(pkey);
 
-    //  We then have to init the signature of the message and tell that we want to sign with SHA1:
-    EVP_SignInit(&md_ctx, EVP_sha1());
+    ret = RSA_sign(NID_sha1WithRSA, strMsg, strlen(strMsg), dgst, size, privateKeyRSA);
 
-    //  After SIgnature is initialized, we have to set the message (strMsg)
-    EVP_SignUpdate(&md_ctx, strMsg, strlen(strMsg));
-
-    //  Now we sign the message:
-    EVP_SignFinal(&md_ctx, dgst, &iBytesWritten, pkeySK);
-
-    //  Clean up the sk handler
-    EVP_PKEY_free(pkeySK);
-    
-    sha1Signed = (string) calloc(strlen(dgst), sizeof(char));
-
-    strcpy(sha1Signed, dgst);
-
-    return sha1Signed;
+    return dgst;
 }
 
-boolean checkSignature(EVP_PKEY* pk, string dgst, string strMsg){
+boolean checkSignature(RSA* pk, int size, unsigned char* dgst, string strMsg){
+    return RSA_verify(NID_sha1WithRSA, strMsg, strlen(strMsg), dgst, size, pk);;
+}
 
-    EVP_MD_CTX md_ctx;
+string cipherMessage(RSA* publicKey, string msg, string cipher, int* size){
+    cipher = (string) calloc(128, sizeof(char)); //    working with a modulus of 1024 bits -> 128 bytes
+    *size =RSA_public_encrypt(strlen(msg), msg, cipher, publicKey, RSA_PKCS1_OAEP_PADDING);
+    return cipher;
+}
 
-    //  To check the signature we must get the pk and the dgst
-    //  Since we have the pk (got as parameter), we just need to initiate the verification:
+string decipherMessage(string cipher, string message, int size){
 
-    EVP_VerifyInit(&md_ctx, EVP_sha1());
+    EVP_PKEY *pkey;
+    FILE* privateKeyFile = fopen("Security/sk", "r");
+    RSA* privateKeyRSA;
+    int ret;
 
-    //  After Verification is initiated, we need to to fill the ctx with the strMsg:
-    EVP_VerifyUpdate(&md_ctx, strMsg, strlen(strMsg));
+    pkey = PEM_read_PrivateKey(privateKeyFile, NULL, NULL, NULL);
+    fclose(privateKeyFile);
 
-    //  Just return the value from the verify (1 -> OK, 0 -> FAILURE, -1 -> ERROR)
-    int ret = EVP_VerifyFinal(&md_ctx, dgst, strlen(dgst), pk);
+    privateKeyRSA = EVP_PKEY_get1_RSA(pkey);
 
-    printf("%d", ret);
+    message = (string)calloc(1024, sizeof(char));
 
-    return ret;
+    RSA_private_decrypt(size, cipher, message, privateKeyRSA, RSA_PKCS1_OAEP_PADDING);
+
+    return message;
 }

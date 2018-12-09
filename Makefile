@@ -1,11 +1,11 @@
 CC=gcc
 FLAGS=-c -Wall
-RES = server.o CreateSocket.o send.o ReceiveString.o ReceiveInt.o SendInt.o HandleClient.o IPCheck.o Register.o
+RES = server.o CreateSocket.o send.o ReceiveString.o ReceiveInt.o SendInt.o HandleClient.o IPCheck.o Register.o Security/RSA.o
 
 all:out
 
 RSA.o: Security/RSA.h Security/RSA.c
-					$(CC) $(FLAGS) Security/RSA.c -lssl -lcrypto
+					cd Security && $(CC) -c RSA.c
 
 Register.o: h_server.h Register.c
 					$(CC) $(FLAGS) Register.c

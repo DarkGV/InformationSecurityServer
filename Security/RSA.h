@@ -10,7 +10,7 @@
 #include <openssl/evp.h>
 #include <openssl/rsa.h>
 
-typedef char* string;
+typedef unsigned char* string;
 typedef int boolean;
 typedef unsigned char DIGEST[1024];   //  Signatures must come in SHA1, so we have 160 bits = 20 bytes
 /* 
@@ -26,10 +26,10 @@ typedef unsigned char DIGEST[1024];   //  Signatures must come in SHA1, so we ha
 *   Code written by Diogo Silva
 */
 
-string digitalSignatureOfMsg(string);       //  Function to sign the message with SHA1
+string digitalSignatureOfMsg(unsigned char*, int*, string);       //  Function to sign the message with SHA1
 
-boolean checkSignature(EVP_PKEY*, string, string);   //  Function to check if message was from the right person (BIO)
+boolean checkSignature(RSA*, int, unsigned char*, string);   //  Function to check if message was from the right person (BIO)
 
-string cipherMessage(EVP_PKEY*, string);    //  Wheneber I want to send a message to the user, must encrypt with his public key (BIO)
+string cipherMessage(RSA*, string, string, int*);    //  Wheneber I want to send a message to the user, must encrypt with his public key (BIO)
 
-string decipherMessage(string);             // Whenever I want to decipher the message, it will need my pk
+string decipherMessage(string, string, int);             // Whenever I want to decipher the message, it will need my pk

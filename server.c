@@ -126,12 +126,10 @@ int main(){
 
 		// Inform the UserHandling thread a new user logged in
 		pthread_mutex_lock(&lock);
-			//usLoggedIn = (Users*) realloc(usLoggedIn, ++iLocalCount * sizeof(SOCKET));
-			//iLocalCount = iConnected;
-			if(iLocalCount-1 > iConnected){
+			//	We need to check if any user disconnected while mais server was waiting for user!
+			if(iLocalCount-1 > iConnected){	//	If yes, then we have to update de user position to the last position of connected.
 				usLoggedIn[iConnected] = usLoggedIn[iLocalCount-1];
-				iLocalCount = iLocalCount - (iLocalCount -  iConnected) + 1;
-				//iusLoggedIn = (Users*) realloc(usLoggedIn, ++iConnected * sizeof(Users));
+				iLocalCount = iLocalCount - (iLocalCount -  iConnected) + 1;	// And update the user login.
 			}
 			
 			iConnected = iLocalCount;
