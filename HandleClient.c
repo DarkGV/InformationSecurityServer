@@ -1,13 +1,19 @@
 #include "h_server.h"
 
-//extern SOCKET* sClient;
+/*
+*	This is the most extense code.
+*	This piece of code is to handle all clients.
+*/
+
 extern Users* usLoggedIn;
 extern int iConnected;
 extern pthread_mutex_t lock;
 extern int iLocalCount;
 
+//	The first client would be immediatly disconnected
+//	SO this functions was defined to give it a try 3 more times with a puase of 2 seconds each.
 int testUser(Users user){
-	int iFlag = 0, iCont;;
+	int iFlag = 0, iCont;
 	iFlag = receiveIntFrom(user.sUserConnection);
 	
 	if(iFlag <= 0){
@@ -31,9 +37,10 @@ void* handleClients(){
 			iFlag = testUser(usLoggedIn[i]);
 			switch(iFlag){
 				case SEND_MESSAGE:
-
-					strMsg = ReceiveStringFrom(usLoggedIn[i].sUserConnection);
-
+					//	We received a SEND_MESSAGE. We need to stream the message to all users.
+					strMsg = ReceiveStringFrom(usLoggedIn[i].sUserConnection); //	Get the string from that user.
+					
+					//	Is it was an error, disconnect the user (zero toleration)
 					if(strMsg == NULL){
 						pthread_mutex_lock(&lock);
 							iConnected--;
@@ -45,9 +52,10 @@ void* handleClients(){
 						continue;
 					}
 
+					//	Broadcast the message
 					for(u = 0; u < iConnected; u++){
-						if(u == i) continue;
-						if(sendInt(SEND_MESSAGE, usLoggedIn[u].sUserConnection) < 0){
+						if(u == i) continue;//	Except to the user who sent it.
+						if(sendInt(SEND_MESSAGE, usLoggedIn[u].sUserConnection) < 0){//	Send the string size.
 
 							pthread_mutex_lock(&lock);
 								iConnected--;
@@ -59,6 +67,7 @@ void* handleClients(){
 							continue;
 						}
 
+						//After sending the string size, just send the message.
 						if(sendTo(usLoggedIn[u].sUserConnection, strMsg) < 0){
 							pthread_mutex_lock(&lock);
 								iConnected--;
@@ -73,11 +82,12 @@ void* handleClients(){
 					strMsg = NULL;
 					break;
 
-				case SOCKET_ALIVE:
+				case SOCKET_ALIVE:	//	SOCKET_ALIVE is a flag to tell each other they both are online.
 					sendInt(SOCKET_ALIVE, usLoggedIn[i].sUserConnection);
 					break;
 
 				default:
+					//	Nohting was received (a number wasn't received wither) so disconnect that user.
 					pthread_mutex_lock(&lock);
 					iConnected--;
 					close(usLoggedIn[i].sUserConnection);
@@ -91,6 +101,5 @@ void* handleClients(){
 		}
 	}
 
-	//printf("Nao quero saber mais sobre isto!");
 	return NULL;
 }

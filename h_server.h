@@ -59,11 +59,6 @@ typedef struct handleUsers {
 */
 string MakeString ( int );
 
-/**
- * Returns the respective int value to a string
- * receives the int value to transform into ascii 
- */
-string itoa(int);
 // --------------------------------------- END --------------------------------------------
 
 // ------------------------------------- SOCKET MANIPULATION ------------------------------
