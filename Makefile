@@ -1,6 +1,6 @@
 CC=gcc
 FLAGS=-c -Wall
-RES = server.o CreateSocket.o send.o ReceiveString.o ReceiveInt.o SendInt.o HandleClient.o IPCheck.o Register.o RSA.o
+RES = server.o CreateSocket.o send.o ReceiveString.o ReceiveInt.o SendInt.o HandleClient.o IPCheck.o Register.o
 
 all:out
 

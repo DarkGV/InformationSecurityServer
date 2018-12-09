@@ -57,11 +57,11 @@ int main(){
 	// A socket will be returned (int) else -1 is returned.
 	sServer = CreateSocket();
 
-	//iLocalCount = iConnected;
+	iLocalCount = iConnected;
 	//To accept the first client We must check if he is logged in
 	//sClient = (SOCKET*) malloc(++(iConnected) * sizeof(SOCKET));
-	usLoggedIn = (Users*) malloc(++(iConnected) * sizeof(Users));
-	iLocalCount = iConnected;
+	usLoggedIn = (Users*) malloc(++(iLocalCount) * sizeof(Users));
+	//iLocalCount = iConnected;
 
 	// Prepare the database for further use.
 	if(sqlite3_open("si_DataBase.db", &database) != SQLITE_OK){
@@ -126,9 +126,17 @@ int main(){
 
 		// Inform the UserHandling thread a new user logged in
 		pthread_mutex_lock(&lock);
-			usLoggedIn = (Users*) realloc(usLoggedIn, ++iConnected * sizeof(SOCKET));
-			iLocalCount = iConnected;
+			//usLoggedIn = (Users*) realloc(usLoggedIn, ++iLocalCount * sizeof(SOCKET));
+			//iLocalCount = iConnected;
+			if(iLocalCount-1 > iConnected){
+				usLoggedIn[iConnected] = usLoggedIn[iLocalCount-1];
+				iLocalCount = iLocalCount - (iLocalCount -  iConnected) + 1;
+				//iusLoggedIn = (Users*) realloc(usLoggedIn, ++iConnected * sizeof(Users));
+			}
+			
+			iConnected = iLocalCount;
 		pthread_mutex_unlock(&lock);
+		usLoggedIn = (Users*) realloc(usLoggedIn, ++iLocalCount * sizeof(Users));
 	}
 	
 	pthread_mutex_destroy(&lock);

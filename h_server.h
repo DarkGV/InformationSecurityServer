@@ -25,7 +25,7 @@ typedef int SOCKET;				            // This type of variable will be called sName
 //Special Types
 #ifndef _RSA_H
 
-#include "Security/RSA.c"
+//#include "Security/RSA.c"
 #include <string.h>
 #include <stdio.h>
 typedef char* string;				        // Easier to understand variables named strName
